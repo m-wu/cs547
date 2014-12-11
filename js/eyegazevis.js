@@ -463,13 +463,22 @@ function drawTimelineView(){
 
 function drawUserCharBars(parent, timeline_chars_width){
   timeline_char_width = timeline_chars_width / 3;
-  timeline_char_height = timeline_char_width * 0.9;
+  timeline_char_height = timeline_char_width * 0.95;
 
   psScale = d3.scale.linear()
       .domain([getMinDomain(min_ps_value, max_ps_value), max_ps_value])
       .range([0, timeline_char_height]);
 
+  parent.selectAll("rect.ref")
+      .data([0,1,2])
+      .enter()
+      .append("rect")
+      .attr("class", "ref")
+      .attr("x", function(d){return timeline_char_width * d;})
+      .attr("width", timeline_char_height);
+
   parent.append("rect")
+      .attr("class", "value")
       .attr("x", 0)
       .attr("width", function(d){return psScale(userchars[d.user].ps_score_value)});
 
@@ -478,6 +487,7 @@ function drawUserCharBars(parent, timeline_chars_width){
       .range([0, timeline_char_height]);
 
   parent.append("rect")
+      .attr("class", "value")
       .attr("x", timeline_char_width)
       .attr("width", function(d){return verbalScale(userchars[d.user].verbal_score_value)});
 
@@ -486,6 +496,7 @@ function drawUserCharBars(parent, timeline_chars_width){
       .range([0, timeline_char_height]);
 
   parent.append("rect")
+      .attr("class", "value")
       .attr("x", timeline_char_width*2)
       .attr("width", function(d){return visualScale(userchars[d.user].visual_score_value)});
 }
