@@ -8,6 +8,7 @@ var mainview_bg_opacity   = 0.5;
 
 var timeline_height       = 800;
 var timeline_label_width  = 60;
+var timeline_legend_size  = 10;
 
 var zoom_ratio            = 0.7035; // image coordinate / fixation coordinate
 
@@ -346,6 +347,7 @@ function drawAllScanPaths(){
 function drawTimelineView(){
   var timeline_width = parseInt(d3.select("#timelineview").style("width"));
   var timeline_chars_width = parseInt($("#sorting-widgets").width());
+  var timeline_legend_width = parseInt($("#timeline-legend").width());
 
   var mouseentered = false;
 
@@ -389,6 +391,36 @@ function drawTimelineView(){
 
   var colorScale = d3.scale.category10()
       .domain(aois.map(function(aoi){return aoi.Name;}));
+
+  // add legends to the timeline
+  var legends = d3.select("#timeline-legend")
+    .selectAll("div.legend")
+    .data(aois)
+    .enter()
+    .append("div")
+      .attr("class", "col-xs-2 legend")
+    .append("svg")
+      .attr("width", timeline_legend_width/6)
+      .attr("height", 30)
+    .append("g")
+      .attr("transform", "translate(0, 10)");
+
+  // add an offset of 2 columns to the first legend
+  d3.select("#timeline-legend")
+    .select("div.legend")
+    .classed("col-xs-offset-2", true);
+
+  legends.append("rect")
+    .attr("width", timeline_legend_size)
+    .attr("height", timeline_legend_size)
+    .attr("fill", function(d){
+      return colorScale(d.Name);
+    });
+
+  legends.append("text")
+    .text(function(d){return d.Name})
+    .attr("x", timeline_legend_size *1.5)
+    .attr("y", 10);
 
   var aoiTip = d3.tip()
       .attr('class', 'd3-tip')
