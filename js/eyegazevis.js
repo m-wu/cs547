@@ -6,7 +6,7 @@ var mainview_img_width    = 900.0;
 var mainview_img_height   = 719.0;
 var mainview_bg_opacity   = 0.5;
 
-var timeline_height       = 800;
+var timeline_height       = 860;
 var timeline_label_width  = 60;
 var timeline_legend_size  = 10;
 
@@ -46,7 +46,7 @@ $(window).load(function() {
 function main(){
   drawMainView();
   // read the JSON data file
-  d3.json("fixation_datasets.json", function(error, json){
+  d3.json("fixation_datasets_Event_1.json", function(error, json){
     fixation_datasets = [];
     for (var i in json){
       // Add the list of fixation points into fixation_datasets
@@ -476,6 +476,9 @@ function drawTimelineView(){
       .attr("class", function(d){return "aoivisit "+d.aoi;})
       .attr("y", 0)
       .style("fill", function(d){
+        if (d.aoi == "None"){
+          return "lightgray";
+        }
         return colorScale(d.aoi);
       })
       .on('mouseover', aoiTip.show)
