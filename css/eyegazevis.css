@@ -115,8 +115,13 @@
   opacity: 1;
 }
 
-.fa-check-circle{
+.fa-check-circle.enabled{
   color: green;
+  cursor: pointer;
+}
+
+.fa-check-circle.disabled{
+  color: gray;
 }
 
 .fa-times-circle{
@@ -142,7 +147,7 @@ g.userchars > rect.ref{
   letter-spacing: 5px;
 }
 
-.fa-sort, .fa-sort-asc, .fa-sort-desc, .fa-check-circle, .fa-times-circle{
+.fa-sort, .fa-sort-asc, .fa-sort-desc, .fa-times-circle{
   cursor: pointer;
 }
 

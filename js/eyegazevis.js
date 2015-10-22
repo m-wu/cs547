@@ -694,7 +694,11 @@ function initSequenceControls(){
 }
 
 function createNewSequenceRow(){
-  var row = d3.select(".seq-list").append("tr");
+  var row = d3.select(".seq-list")
+    .selectAll("tr")
+    .data(definedSequences)
+    .enter()
+    .append("tr");
 
   for (var i = 0; i < maxSequenceLength; i++){
     row.append("td").attr("class", "col-xs-2 seq-empty");
@@ -705,8 +709,12 @@ function createNewSequenceRow(){
 
   // the green checkmark "done" button
   seq_edit_cell.append('i')
-    .attr("class", "fa fa-check-circle")
+    .attr("class", "fa fa-check-circle disabled")
     .on("click", function(){
+      if (currentSequence.length == 0){
+        return;
+      }
+
       seq_edit_cell.select(".fa-check-circle").remove();
 
       currentSequenceRow
@@ -723,39 +731,53 @@ function createNewSequenceRow(){
           d3.selectAll("rect.sequence").classed("sequence", false);
         });
 
-      currentSequence = null;
-      currentSequenceRow = null;
-      d3.select("#new-seq-button").attr("disabled", null);
-      d3.selectAll("g.aoi").classed("clickable", false);
-      d3.select("g.aoi.invalid").classed("invalid", false);
-      d3.selectAll("rect.sequence").classed("sequence", false);
-      d3.selectAll("rect.aoivisit").classed("faded", false);
-      d3.selectAll("td.seq-empty").classed("seq-empty", false);
+      exitPatternEditing();
     });
 
   seq_edit_cell.append("i")
     .attr("class", "fa fa-times-circle")
     .on("click", function(d, i, j){
-      console.log(this.parentNode.parentNode);
+      exitPatternEditing();
+      definedSequences.splice(i, 1);
+      updateSequencePatternList();
     });
 
   return row;
 }
 
+function exitPatternEditing(){
+  currentSequence = null;
+  currentSequenceRow = null;
+  d3.select("#new-seq-button").attr("disabled", null);
+  d3.selectAll("g.aoi").classed("clickable", false);
+  d3.select("g.aoi.invalid").classed("invalid", false);
+  d3.selectAll("rect.sequence").classed("sequence", false);
+  d3.selectAll("rect.aoivisit").classed("faded", false);
+  d3.selectAll("td.seq-empty").classed("seq-empty", false);
+}
+
 function addAOIToSequence(aoi){
+  currentSequenceRow.select(".seq-edit")
+    .select(".fa-check-circle")
+    .attr("class", "fa fa-check-circle enabled");
+
   if (currentSequence.length >= maxSequenceLength){
     return;
   }
-
   currentSequence.push(aoi);
+  updateSequencePatternList();
+}
 
-  d3.select(".seq-list").selectAll("tr")
-    .data(definedSequences)
-    .selectAll("td")
+function updateSequencePatternList(){
+  patternRows = d3.select(".seq-list").selectAll("tr").data(definedSequences);
+
+  patternRows.selectAll("td")
     .data(function(d) {return d;})
     .attr("class", function(d){
       return "col-xs-2 seq-aoi "+d.Name})
     .text(function(d){return d.Name;});
+
+  patternRows.exit().remove();
 }
 
 function showSequenceInTimeline(sequence){
